@@ -14,7 +14,7 @@ public class Auction {
 		this.bids = new ArrayList<Bid>();
 	}
 	
-	public void propoe(Bid bid) {
+	public void bid(Bid bid) {
 		bids.add(bid);
 	}
 

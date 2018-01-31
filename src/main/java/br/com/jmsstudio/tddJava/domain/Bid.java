@@ -3,19 +3,19 @@ package br.com.jmsstudio.tddJava.domain;
 public class Bid {
 
 	private User user;
-	private double valor;
+	private double value;
 	
-	public Bid(User user, double valor) {
+	public Bid(User user, double value) {
 		this.user = user;
-		this.valor = valor;
+		this.value = value;
 	}
 
 	public User getUser() {
 		return user;
 	}
 
-	public double getValor() {
-		return valor;
+	public double getValue() {
+		return value;
 	}
 	
 	

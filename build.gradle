@@ -2,6 +2,7 @@ group 'br.com.jmsstudio'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 sourceCompatibility = 1.8
 
@@ -9,6 +10,7 @@ ext {
     junitPlatformVersion = '1.0.3'
     junitJupiterVersion  = '5.0.3'
     log4jVersion         = '2.10.0'
+    junitVintageVersion  = '4.12.3'
 }
 
 buildscript {
@@ -25,7 +27,8 @@ repositories {
 }
 
 junitPlatform {
-    //platformVersion '1.0.3'
+    details 'tree'
+    platformVersion '1.0.3'
     filters {
         engines {
             include 'junit-jupiter'
@@ -35,7 +38,7 @@ junitPlatform {
             // include 'fast'
             exclude 'slow'
         }
-        // includeClassNamePattern '.*Test'
+         includeClassNamePattern '.*Test'
     }
     // configurationParameter 'junit.jupiter.conditions.deactivate', '*'
     // enableStandardTestTask true
