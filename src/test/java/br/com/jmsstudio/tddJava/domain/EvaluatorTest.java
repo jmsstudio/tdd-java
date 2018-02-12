@@ -6,10 +6,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EvaluatorTest {
+class EvaluatorTest {
 
     @Test
-    public void shouldEvaluateAuctionWithOneBid() {
+    void shouldEvaluateAuctionWithOneBid() {
         Auction auction = new Auction("test");
         auction.bid(new Bid(new User("john"), 200));
 
@@ -22,7 +22,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void shouldEvaluateAuctionWithBidsInDescendingOrder() {
+    void shouldEvaluateAuctionWithBidsInDescendingOrder() {
         User john = new User("john");
         User mary = new User("mary");
         User joseph = new User("joseph");
@@ -41,7 +41,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void shouldEvaluateAuctionWithBidsInAscendingOrder() {
+    void shouldEvaluateAuctionWithBidsInAscendingOrder() {
         User john = new User("john");
         User mary = new User("mary");
         User joseph = new User("joseph");
@@ -60,7 +60,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void shouldEvaluateAuctionWithBidsInRandomOrder() {
+    void shouldEvaluateAuctionWithBidsInRandomOrder() {
         User john = new User("john");
         User mary = new User("mary");
         User joseph = new User("joseph");
@@ -84,7 +84,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void shouldCalculateTheAverageOfBids() {
+    void shouldCalculateTheAverageOfBids() {
         User john = new User("john");
         User mary = new User("mary");
         User joseph = new User("joseph");
@@ -100,7 +100,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void shouldGetThreeBiggestBidsFromFiveBids() {
+    void shouldGetThreeBiggestBidsFromFiveBids() {
         User john = new User("john");
         User mary = new User("mary");
         User joseph = new User("joseph");
@@ -125,7 +125,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void shouldGetThreeBiggestBidsFromTwoBids() {
+    void shouldGetThreeBiggestBidsFromTwoBids() {
         User john = new User("john");
         User mary = new User("mary");
 
@@ -144,7 +144,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void shouldGetThreeBiggestBidsFromAuctionWithNoBids() {
+    void shouldGetThreeBiggestBidsFromAuctionWithNoBids() {
 
         Auction auction = new Auction("product 1");
 
@@ -155,5 +155,120 @@ public class EvaluatorTest {
         final List<Bid> biggestBids = evaluator.getThreeBiggestBids();
         assertEquals(0, biggestBids.size());
     }
+
+    @Test
+    void shouldNotAcceptTwoBidsInSequenceFromTheSameUser() {
+        User john = new User("john");
+
+        Auction auction = new Auction("product 1");
+        auction.bid(new Bid(john, 300));
+        auction.bid(new Bid(john, 500));
+
+        assertEquals(1, auction.getBids().size());
+        assertEquals(300, auction.getBids().get(0).getValue());
+    }
+
+    @Test
+    void shouldNotAcceptMoreThanFiveBidsFromAUser() {
+        User john = new User("john");
+        User mary = new User("mary");
+
+        Auction auction = new Auction("product 1");
+        auction.bid(new Bid(john, 300));
+        auction.bid(new Bid(mary, 350));
+        auction.bid(new Bid(john, 400));
+        auction.bid(new Bid(mary, 450));
+        auction.bid(new Bid(john, 500));
+        auction.bid(new Bid(mary, 550));
+        auction.bid(new Bid(john, 600));
+        auction.bid(new Bid(mary, 650));
+        auction.bid(new Bid(john, 700));
+        auction.bid(new Bid(mary, 750));
+        auction.bid(new Bid(john, 800));
+
+
+        Evaluator evaluator = new Evaluator();
+
+        evaluator.evaluate(auction);
+
+        assertEquals(10, auction.getBids().size());
+        assertEquals(750, evaluator.getMaxBid());
+
+    }
+
+    @Test
+    void shouldAllowUsersToDuplicateBids() {
+        User john = new User("john");
+        User mary = new User("mary");
+
+        Auction auction = new Auction("product 1");
+        auction.bid(new Bid(john, 300));
+        auction.bid(new Bid(mary, 350));
+        auction.doubleBid(john);
+
+        Evaluator evaluator = new Evaluator();
+
+        evaluator.evaluate(auction);
+
+        assertEquals(3, auction.getBids().size());
+        assertEquals(600, evaluator.getMaxBid());
+    }
+
+    @Test
+    void shouldAllowUsersToDuplicateBidsExceptWhenThereAreNoBids() {
+        User john = new User("john");
+        User mary = new User("mary");
+
+        Auction auction = new Auction("product 1");
+        auction.doubleBid(john);
+
+        assertEquals(0, auction.getBids().size());
+    }
+
+    @Test
+    void shouldAllowUsersToDuplicateBidsButTheUserCannotMakeTwoBidsInSequence() {
+        User john = new User("john");
+        User mary = new User("mary");
+
+        Auction auction = new Auction("product 1");
+        auction.bid(new Bid(john, 300));
+        auction.bid(new Bid(mary, 350));
+        auction.doubleBid(mary);
+
+        Evaluator evaluator = new Evaluator();
+
+        evaluator.evaluate(auction);
+
+        assertEquals(2, auction.getBids().size());
+        assertEquals(350, evaluator.getMaxBid());
+    }
+
+    @Test
+    void shouldAllowUsersToDuplicateBidsButTheUserCannotMakeMoreThanFiveBids() {
+        User john = new User("john");
+        User mary = new User("mary");
+
+        Auction auction = new Auction("product 1");
+        auction.bid(new Bid(john, 300));
+        auction.bid(new Bid(mary, 350));
+        auction.doubleBid(john);
+        auction.doubleBid(mary);
+        auction.doubleBid(john);
+        auction.doubleBid(mary);
+        auction.doubleBid(john);
+        auction.doubleBid(mary);
+        auction.doubleBid(john);//4800
+        auction.doubleBid(mary);//5600
+        auction.doubleBid(john);
+
+        Evaluator evaluator = new Evaluator();
+
+        evaluator.evaluate(auction);
+
+        assertEquals(10, auction.getBids().size());
+        assertEquals(5600, evaluator.getMaxBid());
+
+    }
+
 
 }

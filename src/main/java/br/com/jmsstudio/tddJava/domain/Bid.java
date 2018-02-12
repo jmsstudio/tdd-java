@@ -18,6 +18,8 @@ public class Bid {
 		return value;
 	}
 	
-	
+	public Bid doubleValue() {
+		return new Bid(this.user, this.value * 2);
+	}
 	
 }
