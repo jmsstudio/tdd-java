@@ -1,19 +1,28 @@
 package br.com.jmsstudio.tddJava.domain;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@DisplayName("Evaluator")
 class EvaluatorTest {
+
+    private Evaluator evaluator;
+
+    @BeforeEach
+    void setup() {
+        evaluator = new Evaluator();
+    }
 
     @Test
     void shouldEvaluateAuctionWithOneBid() {
         Auction auction = new Auction("test");
         auction.bid(new Bid(new User("john"), 200));
-
-        Evaluator evaluator = new Evaluator();
 
         evaluator.evaluate(auction);
 
@@ -32,8 +41,6 @@ class EvaluatorTest {
         auction.bid(new Bid(joseph, 200));
         auction.bid(new Bid(mary, 100));
 
-        Evaluator evaluator = new Evaluator();
-
         evaluator.evaluate(auction);
 
         assertEquals(500, evaluator.getMaxBid(), 0.001);
@@ -50,8 +57,6 @@ class EvaluatorTest {
         auction.bid(new Bid(mary, 100));
         auction.bid(new Bid(joseph, 200));
         auction.bid(new Bid(john, 500));
-
-        Evaluator evaluator = new Evaluator();
 
         evaluator.evaluate(auction);
 
@@ -75,8 +80,6 @@ class EvaluatorTest {
         auction.bid(new Bid(joseph, 250));
         auction.bid(new Bid(john, 400));
 
-        Evaluator evaluator = new Evaluator();
-
         evaluator.evaluate(auction);
 
         assertEquals(500, evaluator.getMaxBid(), 0.001);
@@ -94,8 +97,6 @@ class EvaluatorTest {
         auction.bid(new Bid(mary, 100));
         auction.bid(new Bid(joseph, 200));
 
-        Evaluator evaluator = new Evaluator();
-
         assertEquals((500 + 100 + 200) / 3.0, evaluator.getAverageBid(auction), 0.01);
     }
 
@@ -112,8 +113,6 @@ class EvaluatorTest {
         auction.bid(new Bid(john, 500));
         auction.bid(new Bid(flint, 150));
         auction.bid(new Bid(mary, 300));
-
-        Evaluator evaluator = new Evaluator();
 
         evaluator.evaluate(auction);
 
@@ -133,8 +132,6 @@ class EvaluatorTest {
         auction.bid(new Bid(mary, 200));
         auction.bid(new Bid(john, 300));
 
-        Evaluator evaluator = new Evaluator();
-
         evaluator.evaluate(auction);
 
         final List<Bid> biggestBids = evaluator.getThreeBiggestBids();
@@ -148,12 +145,25 @@ class EvaluatorTest {
 
         Auction auction = new Auction("product 1");
 
-        Evaluator evaluator = new Evaluator();
+        assertThrows(RuntimeException.class, () -> evaluator.evaluate(auction));
+    }
 
-        evaluator.evaluate(auction);
+    @Test
+    void shouldFailWhenTryingToBidWithNegativeValue() {
+        User john = new User("john");
 
-        final List<Bid> biggestBids = evaluator.getThreeBiggestBids();
-        assertEquals(0, biggestBids.size());
+        Auction auction = new Auction("product 1");
+
+        assertThrows(IllegalArgumentException.class, () -> auction.bid(new Bid(john, -1)));
+    }
+
+    @Test
+    void shouldFailWhenTryingToBidWithValueZero() {
+        User john = new User("john");
+
+        Auction auction = new Auction("product 1");
+
+        assertThrows(IllegalArgumentException.class, () -> auction.bid(new Bid(john, 0)));
     }
 
     @Test
@@ -169,6 +179,7 @@ class EvaluatorTest {
     }
 
     @Test
+    @DisplayName("Should not accept more than 5 bids from a user")
     void shouldNotAcceptMoreThanFiveBidsFromAUser() {
         User john = new User("john");
         User mary = new User("mary");
@@ -186,9 +197,6 @@ class EvaluatorTest {
         auction.bid(new Bid(mary, 750));
         auction.bid(new Bid(john, 800));
 
-
-        Evaluator evaluator = new Evaluator();
-
         evaluator.evaluate(auction);
 
         assertEquals(10, auction.getBids().size());
@@ -205,8 +213,6 @@ class EvaluatorTest {
         auction.bid(new Bid(john, 300));
         auction.bid(new Bid(mary, 350));
         auction.doubleBid(john);
-
-        Evaluator evaluator = new Evaluator();
 
         evaluator.evaluate(auction);
 
@@ -235,8 +241,6 @@ class EvaluatorTest {
         auction.bid(new Bid(mary, 350));
         auction.doubleBid(mary);
 
-        Evaluator evaluator = new Evaluator();
-
         evaluator.evaluate(auction);
 
         assertEquals(2, auction.getBids().size());
@@ -260,8 +264,6 @@ class EvaluatorTest {
         auction.doubleBid(john);//4800
         auction.doubleBid(mary);//5600
         auction.doubleBid(john);
-
-        Evaluator evaluator = new Evaluator();
 
         evaluator.evaluate(auction);
 

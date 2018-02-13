@@ -13,10 +13,13 @@ public class Auction {
 	
 	public Auction(String description) {
 		this.description = description;
-		this.bids = new ArrayList<Bid>();
+		this.bids = new ArrayList<>();
 	}
 	
 	public void bid(Bid bid) {
+	    if (bid.getValue() <= 0) {
+	        throw new IllegalArgumentException("Invalid value");
+        }
         if (canUserBid(bid.getUser())) {
             bids.add(bid);
         }

@@ -15,6 +15,10 @@ public class Evaluator {
     private List<Bid> biggestBids = new ArrayList<>();
 
     public void evaluate(Auction auction) {
+        if (auction.getBids().isEmpty()) {
+            throw new RuntimeException("There are no bids to be evaluated");
+        }
+
         auction.getBids().stream().forEach(bid -> {
             if (bid.getValue() > maxBid) {
                 maxBid = bid.getValue();
